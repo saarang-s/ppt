@@ -22,8 +22,13 @@ Definition and_b (x y: bool):= match x with
                               | false => false
                               | true => y
                               end.
-Qed.
 (*Try to work out the above code*)
 
-Print and_b true true.
+Compute (and_b false true).
 
+Definition or_b (x y:bool) := match x with 
+                            | true => true
+                            | false => y
+                            end.
+
+Compute (or_b true true).

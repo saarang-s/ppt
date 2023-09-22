@@ -28,14 +28,16 @@ eq: forall (A: Type), A->A->Prop
              (Parameter)(index)(index)
                  \/       \/     \/              *)
 Inductive eq (A : Type) : A ->   A -> Prop := 
-                                         | eq_refl : forall x:A, eq A x x.
+                                         | eq_refl1 : forall x:A, eq A x x.
 
 
-Check eq_refl.
+Check eq_refl1.
 
-(* 
+
+
 Goal eq nat 2 2.
-exact eq_refl  nat 2. *)
+exact (eq_refl1 nat 2 ).
+Qed. 
 
 
 (* Another definition *)
@@ -61,7 +63,9 @@ Inductive list (A: Type) : Type :=
 
 Check nil.
 
-(* Arguments nil {A}. *)
+Check cons.
+
+Arguments nil {A}.
 
 Check nil.
 
@@ -75,23 +79,28 @@ end.  *)
 Check list.
 
 (* vector : Type -> nat -> Type. *)
-
+  
 Inductive vector (A : Type) : nat -> Type :=
 | nill : vector A 0
 | cons1 : A -> forall n : nat, vector A n -> vector A (S n).
 
+
+Check cons1.
 
 (* nil : forall A : Type, Vector A O 
 
 cons; forall A:Type, A -> forall n : nat, Vector A n -> Vector A (S n)
  *)
 
+Check vector.
 
 Arguments nil {A}.
 Arguments cons1 {A} _ {n}.
 
 Check cons1.
 Check nil.
+
+Check cons1 42 (nill nat).
 
 (* Definition head {A} {n} (v : vector A (S n)) : A :=
 match v with 
@@ -104,5 +113,7 @@ Argument cons {A} _ {n} *)
 Definition hd {A n} (v : vector A (S n)) : A :=
           match v with 
           | cons1 x _ => x
-          end. 
+          end.  
 
+
+Compute (hd).

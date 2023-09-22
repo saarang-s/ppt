@@ -36,6 +36,8 @@ Inductive ex (A:Type) (P: A-> Prop) : Prop :=
                 | ex_intro : forall (a:A), P a -> ex A P .
 
 
+Check ex.
+
 (* Print forall . *)
 
 

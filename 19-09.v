@@ -13,11 +13,11 @@ cons; forall A:Type, A -> forall n : nat, Vector A n -> Vector A (S n)
  *)
 
 
-Arguments nil {A}.
-Arguments cons {A} _ {n}.
+Arguments nill {A}.
+Arguments cons {A} _ {n}. 
 
-Check cons.
-Check nil.
+(* Check cons.
+Check nill. *)
 
 (* 
 Check cons.
@@ -31,6 +31,11 @@ end
 (* Argument nil {A}
 Argument cons {A} _ {n}
  *)
+
+(* Definition head {A} {n} (v : vector A (S n)): A :=
+match v with 
+      cons _ a _ _ => a
+end. *)
 
 
 Definition hd {A n} (v : vector A (S n)) : A :=
@@ -63,6 +68,10 @@ Definition hd' {A} n (v : vector A n) : match n with
                                                                             | S _ => A
                                                                             end.
  *)
+
+Print IDProp.
+
+
 
 (* 
 ALso deal with it
@@ -105,6 +114,18 @@ Inductive tree2 (A : Type) : Color -> nat -> Type :=
 | red2 : forall n:nat, tree2 A B n -> tree2 A B n -> tree2 A R n 
 | black2 {n c1 c2} :  tree2 A c1 n -> tree2 A c2 n -> tree2 A B (S n).
 *)
+
+Inductive tree2 (A : Type) : Color -> nat -> Type :=
+| nil2 : tree2 A B 0
+| red2 : forall n:nat, tree2 A B n -> tree2 A B n -> tree2 A R n 
+| black2 n c1 c2 :  tree2 A c1 n -> tree2 A c2 n -> tree2 A B (S n).
+
+
+Inductive tree3 (A : Type) : Color -> nat -> Type :=
+| nil3 : tree3 A B 0
+| red3 : forall n:nat, tree3 A B n -> tree3 A B n -> tree3 A R n 
+| black3 {n c1 c2} :  tree3 A c1 n -> tree3 A c2 n -> tree3 A B (S n).
+
 
 Argument tree : clear implicits.
 

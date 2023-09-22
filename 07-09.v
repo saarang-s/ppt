@@ -110,8 +110,8 @@ Definition dM1 A B (nAonB: (or (not A)  (not B)) ) :  (not A) /\ (not B) :=
 (*Natural numbers inductive definition*)
 
 Inductive nat : Set :=
-        | O : nat
-        | S : nat -> nat.
+        | O: nat
+        | S: nat-> nat.
 
 
 Definition isZero (n: nat ): bool :=
@@ -126,11 +126,14 @@ Compute (isZero O).
 
 (*Fix point is used when defining the recursive functions (as of now think like that)*)
 
-Fixpoint plus (m n :nat):nat :=
+Fixpoint plus (m n :nat): nat :=
     match m with 
-    | O => n
-    | S mp => S ( plus mp n)
-    end.
+    | O    => n
+    | S (mp) => S (plus mp n)
+    end .
+
+
+Compute (plus (S(S(O))) (S(O)) ).
 
 (*What essentially happens is we create a function whose fix point is plus, 
 then we find its fix point *)
