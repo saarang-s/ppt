@@ -59,16 +59,47 @@ Definition program := list inst.
 Require Import List.
 Import ListNotations.
 
+(*
 Variant option {A : Type} : Type := 
 | Some : A -> option
 | None : option.
+*)
 
-(* expDenote : exp -> nat
- *)
+Fixpoint expDenote (x: exp) : nat := match x with 
+                                                    | Const n => n
+                                                    | binOp PLUS a b => (expDenote (a)) + (expDenote (b))
+                                                    | binOp MINUS a b => (expDenote (a)) - (expDenote (b))
+                                                    end.
 
-Definition stack := list nat.  (*Can be wrong*)
+
+Definition stack := list nat.  (*Can be wrong*) (*Nah, never wrong*)
 
 (* instDenote : inst -> stack -> option stack. *)
+
+Definition instDenote (i : inst) (s : stack) : option stack := match i with 
+                                                               | Push n => Some (n::s)
+                                                               | Exec PLUS => match s with 
+                                                                           | x1::x2::x => Some ((x1+x2)::x)
+                                                                           | _ => None end
+                                                               | Exec MINUS => match s with 
+                                                                           | x1::x2::x => Some ((x1-x2)::x)
+                                                                           | _ => None end
+                                                               end.
+
+
+
+
+Fixpoint foldl (f : inst -> stack -> option stack) (acc : option stack) (lst : list inst) : option stack :=
+  match lst with
+  | [] => acc
+  | x :: xs => match acc with 
+               | Some a => foldl f (f x a) xs
+               | None => None
+               end
+  end.
+
+Definition programDenote (p : program ) : option stack := foldl instDenote (Some nil) p .
+
 
 (* programDenote : program -> stack -> option stack  *)
 
@@ -78,6 +109,18 @@ Definition stack := list nat.  (*Can be wrong*)
 
 (* once you have instruction denote, we can use fold for programDenote (foldleft) *)
 
-Definition compile  : exp -> program = fun (e : exp).
+(* Definition compileHelp (e: exp) (p : program): program := match e with 
+                                                         | Const n => (Push n) :: p
+                                                         | binOp op n1 n2 => (compileHelp ) *)
+
+Fixpoint compile  (e: exp) : program := match e with 
+                                        | Const n => [Push n]
+                                        | binOp op n1 n2 => (compile n1) ++ (compile n2) ++ ((Exec op)::nil)
+                                        end.
+
+Definition e := binOp (PLUS) (Const 2) (Const 3).
+
+Definition a := compile ( e).
+Compute a.
 
 
