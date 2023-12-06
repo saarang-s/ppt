@@ -41,5 +41,7 @@ About map.
 About app.
 Print app.
 
-Definition app : forall A B E, A -> B + {E} -> A + {E} -> B+ {E} := 
+Definition app : forall A B E, A -> B + {E} -> A + {E} -> B+ {E} := fun A B E pA sB sA  => sB.
+
+ 
 

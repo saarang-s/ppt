@@ -1,0 +1,110 @@
+Require Import List.
+Import ListNotations.
+(*Capturing Programming languages Semantics*)
+
+(* Correctness of Compilers *)
+(* STLC - simply typed lambda calculus *)
+(* Expressin variable binding *)
+
+(* "Toy" functional programing language
+ e = variables
+  | e1 e2 (Application)
+  | fun x : Tau => e
+  | true 
+  | and 
+  | not
+  
+  tau := bool
+  | tau1 -> tau2
+ *)
+
+(* beta reduction
+(fun x => e) M is same as e [x/M] (replace free occurence of x by M)
+*)
+
+(* De Bruijn index
+ *)
+ 
+(*  fun x => x (fun y => x)
+
+fun => 0 (fun => 1 O )
+
+Closed lambda calculus terms are the ones with not free variables. 
+De Bruijn Index is applicable only for this.
+*)
+
+(* e = (fun x1 => fun x2 => ... fun xn => M)
+FV (e) = {y1,y2,y3,...ym}
+
+e can also be captured as
+
+e' = (fun y1 => .... fun ym => e ) y1 y2 ... ym
+
+*)
+
+
+Inductive type :=
+| Bool : type
+| Nat : type
+| Arrow : type -> type -> type .
+
+
+Section hlist.
+Variable A : Type.
+Variable B : A -> Type.
+Context {sort : Type }.
+Variable elm : A.
+
+Inductive hlist {A:sort -> Type } : list sort -> Type :=
+| hnil : hlist []
+| hcons {s:sort} : A s -> forall {l}, hlist l -> hlist (s::l).
+
+Inductive member : sort -> list sort -> Type := (* A membership proof of a set *)
+| here {s : sort} {l : list sort} : member s ( s :: l)
+| there { s : sort } { l : list sort } : member s l -> forall {s'}, member s (s' ::l ).
+End hlist.
+Arguments hlist {sort} A.
+Arguments hcons {sort A s} _ {l}.
+
+Definition hd  {sort} { A : sort->Type } { s : sort } { l : list sort } ( hl: hlist _ (s::l) ) : A s := 
+match hl with
+| hcons x _ => x
+end. 
+Definition tail {sort} {A : sort -> Type} {s : sort} {l : list sort} (hl : hlist _ (s :: l) ): hlist A l :=
+match hl with
+| hcons _ x => x
+end.
+
+Fixpoint get  {sort} {s:sort} {l : list sort} (mp: member s l) {A} : ( hlist A l) -> A s:= 
+(* match mp in member s0 l0 return hlist A l0 -> A s0 *)
+
+match mp with
+| here => fun hl =>  hd hl
+| there mpp => fun hl => get mpp (tail hl)
+end.
+
+Inductive exp : list type -> type -> Type :=
+(*                   |         |
+                     |         \----> the type of the expression
+                     \--------------> the list of types of the free variables
+*)
+| Var {G} {t} : member t G -> exp G t
+| App {G} {t1 t2} : exp G (Arrow t1 t2) -> exp G t1 -> exp G t2
+| Abs {G} {dom ran} : exp (dom :: G) ran -> exp G (Arrow dom ran)
+| Let {G} {t1 t2}: exp G t1 -> exp (t1 :: G) t2 -> exp G t2. 
+
+Fixpoint typeDenote t : Type :=
+match t with
+| Bool => bool
+| Nat => nat
+| Arrow t1 t2 => typeDenote t1 -> typeDenote t2
+end.
+
+(*expDenote G t (e : exp G t) env  *)
+Fixpoint expDenote {G} {t} (e : exp G t) : hlist typeDenote G -> typeDenote t:=
+match e with
+| Var x  => fun env => get x env
+| App e1 e2     => fun env => (expDenote e1 env) (expDenote e2 env)
+| Abs e  => fun env => fun x => expDenote e (hcons x env)
+| Let e1 e2     => fun env => expDenote e2 ( hcons (expDenote e1 env)  env)
+end.

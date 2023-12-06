@@ -154,7 +154,7 @@ Ltac crush :=  repeat (simpl; trivial;
               | [ |- stack -> _ ] => let s := fresh "s" in
                                         intro s
               | [H : _ |- _ ] => try rewrite H
-              | _ => autorewrite with compiler
+              | _ => autorewrite with compile
               end).
 
 Lemma correctnessPP : forall e p st, programDenote (compile e ++ p) st = programDenote p (expDenote e ::st).
@@ -174,5 +174,6 @@ app_assoc_reverse: forall [A : Type] (l m n : list A), (l ++ m) ++ n = l ++ m ++
   simpl; trivial.
 Qed.
 
-
+(* Lemma correctnessPP1 : forall e p st, programDenote (compile e ++ p) st = programDenote p (expDenote e ::st).
+crush. *)
 
