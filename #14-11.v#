@@ -12,16 +12,19 @@ End Hlist.
 Arguments hlist {sort} A.
 Arguments hcons {sort A s} _ {l}.
 
+
+Check (hnil).
 (* Definition hd : forall sort ( A : sort -> Type ) ( s : sort) (l : list sort) , 
 hlist (s :: l) -> A s.
  *)
 (* Definition tails : forall sort (A : sort -> Type ) (s : sort) (l :list sort),
 hlist (s ::l ) -> hlist A l. *)
 
-Definition hd  {sort} { A : sort->Type } { s : sort } { l : list sort } ( hl: hlist _ (s::l) ) : A s := 
+Definition hd  {sort} { A : sort->Type } { s : sort } { l : list sort } ( hl: hlist A (s::l) ) : A s := 
 match hl with
 | hcons x _ => x
 end. 
+
 
 Definition tail {sort} {A : sort -> Type} {s : sort} {l : list sort} (hl : hlist _ (s :: l) ): hlist A l :=
 match hl with
@@ -75,7 +78,15 @@ match l with
 | x::ls => let c := all ls in
             hcons there (hd c) hd
             end. *)
-Definition map : (forall s, A s -> B s) -> hlist A l -> hlist B l
+            
+Fixpoint map  {sort} {A : sort -> Type} {B : sort -> Type} {l : list sort} :  (forall s, A s -> B s) -> hlist A l -> hlist B l .
+refine (fun s m hl => 
+match hl with
+| hnil => _ 
+| hcons a hls => hcons (m a) _
+end
+).
+
             
 Fixpoint all l :=
 match l with
